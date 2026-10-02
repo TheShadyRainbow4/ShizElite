@@ -93,7 +93,6 @@
             android:banner="@mipmap/banner"
             android:allowEmbedded="true"
             android:resizeableActivity="true"
-            android:documentLaunchMode="always"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
