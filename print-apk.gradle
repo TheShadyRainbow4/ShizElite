@@ -1,0 +1,1 @@
+android.applicationVariants.all { v -> v.outputs.all { out -> println "APK IS AT: " + out.outputFile } }

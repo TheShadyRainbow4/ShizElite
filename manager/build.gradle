@@ -50,7 +50,7 @@ android {
         }
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
     packagingOptions {
         jniLibs {
@@ -206,3 +206,4 @@ dependencies {
 }
 
 apply from: rootProject.file("signing.gradle")
+android.applicationVariants.all { variant -> variant.assembleProvider.get().doLast { copy { from variant.outputs.first().outputFile; into "C:/Users/Administrator/Desktop/Projects/Shizuku/out" } } }
