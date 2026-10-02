@@ -56,7 +56,8 @@
         android:text="@string/check_for_updates"
         app:icon="@drawable/ic_update_24"
         app:layout_constraintTop_toBottomOf="@id/source_code"
-        app:layout_constraintStart_toStartOf="@id/source_code" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDonate"
@@ -67,7 +68,8 @@
         android:text="@string/buy_me_a_coffee"
         app:icon="@drawable/ic_bmc_logo"
         app:layout_constraintTop_toBottomOf="@id/btnUpdate"
-        app:layout_constraintStart_toStartOf="@id/btnUpdate" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Close button -->
     <ImageButton
