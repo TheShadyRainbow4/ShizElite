@@ -219,7 +219,7 @@ abstract class HomeActivity : AppBarActivity() {
                 }
 
                 binding.btnDonate.setOnClickListener {
-                    CustomTabsHelper.launchUrlOrCopy(this, "https://www.buymeacoffee.com/thedjchi")
+                    CustomTabsHelper.launchUrlOrCopy(this, "http://main.elitesoftwaretech.cc")
                 }
 
                 val dialog = MaterialAlertDialogBuilder(this)
