@@ -24,3 +24,4 @@ build/reports/problems/problems-report.html
 manager/src/main/java/moe/shizuku/manager/utils/ShizukuStateMachine.kt
 /manager/src/main/java/moe/shizuku/manager/utils
 ShizElite.wiki/
+out/
