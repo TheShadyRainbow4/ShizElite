@@ -39,6 +39,7 @@ object ShizukuStateMachine {
         if(oldState != newState) {
             listeners.forEach { it(newState) }
             Log.d("ShizukuStateMachine", newState.toString())
+            moe.shizuku.manager.widget.ShizEliteWidgetProvider.broadcastUpdate(appContext)
         }
     }
 
