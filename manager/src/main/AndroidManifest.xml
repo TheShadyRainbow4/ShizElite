@@ -90,6 +90,22 @@
 
 
         <activity
+            android:name=".BubbleLauncherActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:exported="true" />
+            
+        <activity
+            android:name=".BubbleActivity"
+            android:allowEmbedded="true"
+            android:resizeableActivity="true"
+            android:documentLaunchMode="always"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true" />
+            
+        <activity
             android:name=".MainActivity"
             android:banner="@mipmap/banner"
             android:allowEmbedded="true"
