@@ -10,6 +10,7 @@ import kotlinx.serialization.decodeFromString
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuApplication
 import moe.shizuku.manager.BuildConfig
+import android.content.Intent
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.utils.ApkUtils.*
 import okhttp3.OkHttpClient
