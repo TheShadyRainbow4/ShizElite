@@ -41,6 +41,8 @@ public class ShizukuSettings {
         public static final String KEY_REPORT_BUG = "report_bug";
         public static final String KEY_LEGACY_PAIRING = "legacy_pairing";
         public static final String KEY_CATEGORY_ADVANCED = "category_advanced";
+        public static final String KEY_MANUALLY_STOPPED = "manually_stopped";
+        public static final String KEY_LAST_ADB_TRANSPORT = "last_adb_transport";
     }
 
     public static class UpdateMode {
@@ -157,14 +159,39 @@ public class ShizukuSettings {
         return WatchdogService.isRunning();
     }
 
+    public static final String GLOBAL_KEY_WATCHDOG = "shizuku_watchdog";
+
     public static void setWatchdog(Context context, boolean enable) {
         if (enable) {
+            setManuallyStopped(false);
             WatchdogService.start(context);
         } else {
             WatchdogService.stop(context);
         }
         getPreferences().edit().putBoolean(Keys.KEY_WATCHDOG, enable).apply();
-        return;
+        try {
+            android.provider.Settings.Global.putInt(context.getContentResolver(), GLOBAL_KEY_WATCHDOG, enable ? 1 : 0);
+        } catch (Exception ignored) {}
+    }
+
+    public static boolean getManuallyStopped() {
+        return getPreferences().getBoolean(Keys.KEY_MANUALLY_STOPPED, false);
+    }
+
+    public static void setManuallyStopped(boolean value) {
+        getPreferences().edit().putBoolean(Keys.KEY_MANUALLY_STOPPED, value).apply();
+    }
+
+    public static final int ADB_TRANSPORT_UNKNOWN = 0;
+    public static final int ADB_TRANSPORT_TLS = 1;
+    public static final int ADB_TRANSPORT_TCP = 2;
+
+    public static int getLastAdbTransport() {
+        return getPreferences().getInt(Keys.KEY_LAST_ADB_TRANSPORT, ADB_TRANSPORT_UNKNOWN);
+    }
+
+    public static void setLastAdbTransport(int transport) {
+        getPreferences().edit().putInt(Keys.KEY_LAST_ADB_TRANSPORT, transport).apply();
     }
 
     public static boolean getTcpMode() {

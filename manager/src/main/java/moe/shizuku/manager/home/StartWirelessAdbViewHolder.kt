@@ -31,6 +31,7 @@ import moe.shizuku.manager.receiver.NotifCancelReceiver
 import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.CustomTabsHelper
 import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.utils.SettingsPage
 import moe.shizuku.manager.utils.ShizukuStateMachine
 import rikka.core.content.asActivity
 import rikka.html.text.HtmlCompat
@@ -51,40 +52,65 @@ class StartWirelessAdbViewHolder(binding: HomeStartWirelessAdbBinding, root: Vie
 
         fun start (context: Context, scope: CoroutineScope) {
             if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
-                Toast.makeText(context, context.getString(R.string.toast_shizuku_already_starting), Toast.LENGTH_SHORT).show()
-                return
+                // Watchdog may have triggered a background start that stalled or failed.
+                // Cancel the worker so the manual start can take over, but leave the state
+                // alone — resetting it to STOPPED would break crash detection (setDead()
+                // only emits CRASHED from RUNNING, so a premature STOPPED means the
+                // watchdog never retries if the next attempt also fails).
+                WorkManager.getInstance(context).cancelUniqueWork("adb_start_worker")
             }
 
             context.sendBroadcast(Intent(context, NotifCancelReceiver::class.java))
 
+            // The user explicitly asked for a start — lift manual-stop suppression
+            ShizukuSettings.setManuallyStopped(false)
+
             val cr = context.contentResolver
+            val tcpPort = EnvironmentUtils.getAdbTcpPort()
+            val tcpMode = ShizukuSettings.getTcpMode()
+
+            if (EnvironmentUtils.isTlsSupported()) {
+                // On TLS-capable devices a start NEVER enables USB debugging.
+                // The classic TCP fast path is only taken when it is already
+                // fully usable: port open, TCP mode on, USB debugging already on.
+                val usbEnabled = Settings.Global.getInt(cr, Settings.Global.ADB_ENABLED, 0) == 1
+                if (tcpPort > 0 && tcpMode && usbEnabled) {
+                    if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+                        // Keep the adb authorization from expiring mid-session
+                        Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+                    }
+                    val intent = Intent(context, StarterActivity::class.java).apply {
+                        putExtra(StarterActivity.EXTRA_PORT, tcpPort)
+                    }
+                    context.startActivity(intent)
+                    return
+                }
+
+                // Otherwise start over TLS wireless debugging. The discovery dialog
+                // (re)enables wireless debugging itself when permitted; USB debugging
+                // is left untouched.
+                if (tcpPort > 0 && !tcpMode) {
+                    // TCP mode was turned off but a port is still open — close it
+                    scope.launch {
+                        AdbStarter.stopTcp(context, tcpPort)
+                    }
+                }
+                AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                return
+            }
+
+            // Pre-TLS devices (Android < 11 / older TVs): only classic TCP adb is
+            // available, and it rides on the USB debugging toggle.
             if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
                 Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
             }
-        
-            val adbEnabled = Settings.Global.getInt(cr, Settings.Global.ADB_ENABLED, 0)
-            if (adbEnabled == 0) {
+            if (Settings.Global.getInt(cr, Settings.Global.ADB_ENABLED, 0) == 0) {
                 WadbEnableUsbDebuggingDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
                 return
             }
-
-            val tcpPort = EnvironmentUtils.getAdbTcpPort()
-            val tcpMode = ShizukuSettings.getTcpMode()
-
-            // If ADB is NOT listening to a TCP port and the device doesn't support TLS, inform the user
-            if (tcpPort <= 0 && !EnvironmentUtils.isTlsSupported()) {
+            if (tcpPort <= 0) {
                 WadbNotEnabledDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
-            // If ADB IS NOT listening to a TCP port but the device supports TLS, start mDns discovery
-            } else if (tcpPort <= 0) {
-                AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
-            // If ADB IS listening to a TCP port but the user wants to close it and use TLS instead, close the TCP port and start mDns discovery
-            } else if (!tcpMode) {
-                scope.launch {
-                    AdbStarter.stopTcp(context, tcpPort)
-                }
-                AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
-            // Otherwise ADB IS listening to a TCP port and the user wants to keep it open. Start Shizuku via TCP
             } else {
                 val intent = Intent(context, StarterActivity::class.java).apply {
                     putExtra(StarterActivity.EXTRA_PORT, tcpPort)
@@ -106,6 +132,9 @@ class StartWirelessAdbViewHolder(binding: HomeStartWirelessAdbBinding, root: Vie
             binding.button2.setOnClickListener { v: View ->
                 onPairClicked(v.context)
             }
+            binding.buttonDeveloperSettings.setOnClickListener { v: View ->
+                SettingsPage.Developer.HighlightWirelessDebugging.launch(v.context)
+            }
             binding.text1.movementMethod = LinkMovementMethod.getInstance()
             binding.text1.text = context.getString(R.string.home_wireless_adb_description)
                 .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
@@ -114,6 +143,7 @@ class StartWirelessAdbViewHolder(binding: HomeStartWirelessAdbBinding, root: Vie
                 .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
             binding.button2.isVisible = false
             binding.button3.isVisible = false
+            binding.buttonDeveloperSettings.isVisible = false
         }
     }
 

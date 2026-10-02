@@ -14,7 +14,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import moe.shizuku.manager.R
 import moe.shizuku.manager.adb.AdbMdns
 import moe.shizuku.manager.databinding.AdbDialogBinding
@@ -56,11 +59,32 @@ class AdbDialogFragment : DialogFragment() {
     private fun onDialogShow(dialog: AlertDialog) {
         adbMdns.start()
         val context = dialog.context
-        if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED)
-            Settings.Global.putInt(context.contentResolver, "adb_wifi_enabled", 1)
-
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             SettingsPage.Developer.HighlightWirelessDebugging.launch(context)
+        }
+
+        // Wireless debugging that has been on for a while can have a stale mDNS
+        // announcement, and re-writing 1 is a no-op for SettingsProvider. Bounce
+        // the toggle so adbd re-initializes wireless and announces a fresh port
+        // (same trick as AdbStartWorker). Also enables wireless debugging if it
+        // was off, so discovery has something to find.
+        val appContext = requireContext().applicationContext
+        if (appContext.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+            lifecycleScope.launch {
+                val cr = appContext.contentResolver
+                if (Settings.Global.getInt(cr, "adb_wifi_enabled", 0) == 1) {
+                    Settings.Global.putInt(cr, "adb_wifi_enabled", 0)
+                    try {
+                        delay(200)
+                    } finally {
+                        // Restore unconditionally so cancellation (dialog dismissed
+                        // mid-bounce) can't leave wireless debugging disabled.
+                        Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                    }
+                } else {
+                    Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                }
+            }
         }
 
         port.observe(this) {
