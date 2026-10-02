@@ -173,8 +173,30 @@ object UpdateHelper {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
         val chooser = Intent.createChooser(installIntent, "Choose installer")
-        chooser.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        appContext.startActivity(chooser)
+        val pm = appContext.packageManager
+        val resolveInfos = pm.queryIntentActivities(installIntent, 0)
+        var universalInstaller: android.content.ComponentName? = null
+        val excludedComponents = mutableListOf<android.content.ComponentName>()
+        for (info in resolveInfos) {
+            val pkg = info.activityInfo.packageName
+            val label = info.loadLabel(pm).toString().lowercase()
+            if (label.contains("lucky patcher") || pkg.contains("lucky")) {
+                excludedComponents.add(android.content.ComponentName(pkg, info.activityInfo.name))
+            } else if (label.contains("universal installer") || pkg.contains("universalinstaller") || pkg.contains("universal")) {
+                universalInstaller = android.content.ComponentName(pkg, info.activityInfo.name)
+            }
+        }
+        if (universalInstaller != null) {
+            installIntent.component = universalInstaller
+            installIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            appContext.startActivity(installIntent)
+        } else {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N && excludedComponents.isNotEmpty()) {
+                chooser.putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, excludedComponents.toTypedArray())
+            }
+            chooser.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            appContext.startActivity(chooser)
+        }
     }
 
     private suspend fun fetchLatestRelease(): Release =
@@ -236,3 +258,6 @@ object UpdateHelper {
     }
 
 }
+
+
+
