@@ -89,10 +89,22 @@
         tools:targetApi="33">
 
         <activity
+            android:name=".BubbleActivity"
+            android:allowEmbedded="true"
+            android:resizeableActivity="true"
+            android:documentLaunchMode="always"
+            android:taskAffinity=".bubble"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true" />
+            
+        <activity
             android:name=".MainActivity"
             android:banner="@mipmap/banner"
             android:allowEmbedded="true"
             android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
