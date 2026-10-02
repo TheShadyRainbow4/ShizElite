@@ -92,8 +92,6 @@
             android:name=".BubbleActivity"
             android:allowEmbedded="true"
             android:resizeableActivity="true"
-            android:documentLaunchMode="always"
-            android:taskAffinity=".bubble"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
