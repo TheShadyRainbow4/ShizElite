@@ -44,6 +44,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/stop" />
 
+            <com.google.android.material.button.MaterialButton
+                style="?attr/materialButtonOutlinedStyle"
+                android:id="@+id/buttonBubble"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bubble" />
+
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <com.google.android.material.textfield.TextInputLayout

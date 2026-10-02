@@ -105,18 +105,26 @@ abstract class HomeActivity : AppBarActivity() {
 
         lifecycleScope.launch {
             if (UpdateHelper.isCheckForUpdatesEnabled() && UpdateHelper.isNewUpdateAvailable()) {
-                SnackbarHelper.show(
-                    this@HomeActivity,
-                    binding.root,
-                    msg = getString(R.string.snackbar_update_available),
-                    duration = Snackbar.LENGTH_INDEFINITE,
-                    actionText = getString(R.string.snackbar_action_update),
-                    action = {
-                        lifecycleScope.launch {
-                            UpdateHelper.update()
+                if (moe.shizuku.manager.ShizukuSettings.isUpdateViaBubbleEnabled()) {
+                    moe.shizuku.manager.utils.BubbleHelper.displayBubble(
+                        this@HomeActivity,
+                        "ShizElite Update Available",
+                        "Tap the bubble to view the update"
+                    )
+                } else {
+                    SnackbarHelper.show(
+                        this@HomeActivity,
+                        binding.root,
+                        msg = getString(R.string.snackbar_update_available),
+                        duration = Snackbar.LENGTH_INDEFINITE,
+                        actionText = getString(R.string.snackbar_action_update),
+                        action = {
+                            lifecycleScope.launch {
+                                UpdateHelper.update()
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
 

@@ -243,4 +243,8 @@ public class ShizukuSettings {
     public static int getUpdateMode() {
         return getPreferences().getInt(Keys.KEY_UPDATE_MODE, UpdateMode.STABLE);
     }
+
+    public static boolean isUpdateViaBubbleEnabled() {
+        return getPreferences().getBoolean("update_via_bubble", false);
+    }
 }

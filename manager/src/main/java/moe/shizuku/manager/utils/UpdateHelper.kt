@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuApplication
+import moe.shizuku.manager.BuildConfig
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.utils.ApkUtils.*
 import okhttp3.OkHttpClient
@@ -161,12 +162,18 @@ object UpdateHelper {
             return
         }
 
-        appContext.installPackage(apk) { isSuccess, _ ->
-            val toastMsg =
-                if (isSuccess) appContext.getString(R.string.update_success)
-                else appContext.getString(R.string.update_failed)
-            Toast.makeText(appContext, toastMsg, Toast.LENGTH_SHORT).show()
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            appContext,
+            "${BuildConfig.APPLICATION_ID}.fileprovider",
+            apk
+        )
+        val installIntent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/vnd.android.package-archive")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
+        val chooser = Intent.createChooser(installIntent, "Choose installer")
+        chooser.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        appContext.startActivity(chooser)
     }
 
     private suspend fun fetchLatestRelease(): Release =

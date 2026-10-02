@@ -310,4 +310,4 @@
     <string name="dialog_requesting_legacy_button_open_shizuku">Open ShizElite</string>
     <string name="wadb_notification_attempt_now">Attempt now</string>
 
-</resources>
+    <string name="widget_bubble_desc">Tap to summon ShizElite floating bubble</string></resources>

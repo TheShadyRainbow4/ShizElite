@@ -91,6 +91,8 @@
         <activity
             android:name=".MainActivity"
             android:banner="@mipmap/banner"
+            android:allowEmbedded="true"
+            android:resizeableActivity="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -296,6 +298,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_shizelite_info" />
         </receiver>
-    </application>
+    <receiver android:name=".receiver.BubbleTriggerReceiver" android:exported="true"><intent-filter><action android:name="moe.shizuku.manager.action.OPEN_BUBBLE" /></intent-filter></receiver><receiver android:name=".widget.BubbleWidgetProvider" android:exported="true" android:label="ShizElite Bubble"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/bubble_widget_info" /></receiver></application>
 
 </manifest>

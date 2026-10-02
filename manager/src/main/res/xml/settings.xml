@@ -92,6 +92,12 @@
             android:summary="%s"
             android:title="@string/check_for_updates" />
 
+        <SwitchPreferenceCompat
+            android:key="update_via_bubble"
+            android:title="Notify updates via Bubble"
+            android:summary="Show update notifications as a floating bubble"
+            android:defaultValue="false" />
+
         <Preference
             android:key="help"
             android:title="@string/settings_help" />

@@ -121,6 +121,7 @@ class AutomationViewHolder(
         when (buttonId) {
             R.id.buttonStart -> "${BuildConfig.APPLICATION_ID}.START"
             R.id.buttonStop -> "${BuildConfig.APPLICATION_ID}.STOP"
+            R.id.buttonBubble -> "moe.shizuku.manager.action.OPEN_BUBBLE"
             else -> ""
         }
 }
