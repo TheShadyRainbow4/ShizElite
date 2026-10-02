@@ -117,7 +117,6 @@ abstract class HomeActivity : AppBarActivity() {
                         }
                     }
                 )
-                UpdateHelper.updateLastPromptedVersion()
             }
         }
 

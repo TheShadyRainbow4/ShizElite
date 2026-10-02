@@ -68,6 +68,7 @@ object UpdateHelper {
     data class GitHubRelease(
         val tag_name: String,
         val prerelease: Boolean,
+        val target_commitish: String = "",
         val assets: List<GitHubAsset>
     )
 
@@ -96,11 +97,7 @@ object UpdateHelper {
     fun isCheckForUpdatesEnabled(): Boolean = ShizukuSettings.getUpdateMode() != ShizukuSettings.UpdateMode.OFF
 
     suspend fun isNewUpdateAvailable(): Boolean {
-        val lastPromptedVersion =
-            Version.parse(ShizukuSettings.getLastPromptedVersion())
-                ?: Version.parse(getVersionName())
-                ?: return false
-        return if (isUpdateAvailable()) latestRelease.version > lastPromptedVersion else false
+        return isUpdateAvailable()
     }
 
     suspend fun isUpdateAvailable(): Boolean {
@@ -184,7 +181,7 @@ object UpdateHelper {
                 if (ShizukuSettings.getUpdateMode() == ShizukuSettings.UpdateMode.BETA) {
                     releases
                 } else {
-                    releases.filter { !it.prerelease }
+                    releases.filter { it.target_commitish == "main" || it.target_commitish == "master" }
                 }
 
             filtered
