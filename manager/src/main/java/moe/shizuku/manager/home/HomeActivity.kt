@@ -59,7 +59,7 @@ abstract class HomeActivity : AppBarActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = "${getString(R.string.app_name)} - Modified by EliteSoftware Oct, 1 2026"
+        title = getString(R.string.app_name) + " - Modified by EliteSoftware Oct, 1 2026"
 
         val binding = HomeActivityBinding.inflate(layoutInflater, rootView, true)
 

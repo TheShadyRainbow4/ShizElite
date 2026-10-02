@@ -4,11 +4,14 @@
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store
-/build
+
 /captures
 .externalNativeBuild
 /.idea
 /manager/signing.properties
-/out
+
 /signing.properties
 /.kotlin
+manager/src/main/java/moe/shizuku/manager/home/HomeActivity.kt
+manager/src/main/java/moe/shizuku/manager/home/HomeActivity.kt
+*.kt
