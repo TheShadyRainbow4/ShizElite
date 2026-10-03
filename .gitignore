@@ -16,11 +16,9 @@ diff_files.txt
 /jdk21
 jdk21.zip
 build/reports/problems/problems-report.html
-*.kt
 /out/mapping
 /manager/src/main/res/xml
 /manager/src/main/res
-*.kt
 manager/src/main/java/moe/shizuku/manager/utils/ShizukuStateMachine.kt
 /manager/src/main/java/moe/shizuku/manager/utils
 ShizElite.wiki/
