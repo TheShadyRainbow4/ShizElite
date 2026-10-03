@@ -92,8 +92,8 @@ fun createStubApk(pkgName: String): File {
             setValueAsString("${getAppLabel()} Stub")
         }
     val appIcon =
-        packageBlock.getOrCreate("", "mipmap", "ic_launcher").apply {
-            setValueAsReference(R.mipmap.ic_launcher)
+        packageBlock.getOrCreate("", "drawable", "ic_launcher").apply {
+            setValueAsReference(R.drawable.ic_launcher)
         }
 
     Log.i(TAG, "Creating manifest")
