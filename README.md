@@ -18,6 +18,8 @@ An Android app that allows other apps to use system-level APIs that require ADB/
 [![Translate on Crowdin](https://img.shields.io/badge/Translate%20on%20Crowdin-2e3340?style=for-the-badge&logo=crowdin&logoColor=ffffff)](https://crowdin.com/project/shizuku)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-bfb330?style=for-the-badge&logo=buymeacoffee&logoColor=ffffff)](https://www.buymeacoffee.com/thedjchi)
 
+### 📸 [More Info & Screenshots](More_Info-&_Screenshots.md)
+
 </div>
 
 ## ⚠️ Disclaimer
